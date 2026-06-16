@@ -29,6 +29,7 @@ export default function GameSelector() {
           { name: "Shadow of the Ninja", path: "/roms/Shadow of the Ninja.nes" },
           { name: "CrossFire", path: "/roms/CrossFire.nes" },
           { name: "Prince of Persia", path: "/roms/Prince of Persia.nes" },
+          
         ]);
       });
   }, []);
