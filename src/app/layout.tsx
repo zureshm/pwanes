@@ -11,6 +11,9 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "NES Player",
   },
+  icons: {
+    apple: "/icon-192.png",
+  },
 };
 
 export const viewport: Viewport = {

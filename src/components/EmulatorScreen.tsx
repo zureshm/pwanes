@@ -140,7 +140,11 @@ export default function EmulatorScreen() {
         // This decouples audio timing from display refresh rate jitter.
         intervalRef.current = setInterval(() => {
           if (!cancelled && nesRef.current) {
-            nesRef.current.frame();
+            try {
+              nesRef.current.frame();
+            } catch {
+              // jsnes can throw internally on stop/reset — ignore
+            }
           }
         }, 1000 / 60.098);
 
@@ -159,8 +163,8 @@ export default function EmulatorScreen() {
 
     return () => {
       cancelled = true;
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null; }
+      if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = 0; }
       nesRef.current = null;
       scriptNodeRef.current?.disconnect();
       scriptNodeRef.current = null;

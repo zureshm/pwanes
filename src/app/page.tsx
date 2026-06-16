@@ -19,10 +19,16 @@ export default function GameSelector() {
       .catch(() => {
         // Fallback: hardcoded ROM list for static export
         setRoms([
-          { name: "Super Contra", path: "/roms/Super Contra.nes" },
-          { name: "Mario Bros", path: "/roms/Mario Bros.nes" },
+          { name: "Super Mario Bros", path: "/roms/Mario Bros.nes" },
+          { name: "Arkanoid", path: "/roms/Arkanoid.nes" },
+          { name: "Pac-Man", path: "/roms/Pac-Man.nes" },
+          { name: "Bugs Bunny Crazy Castle", path: "/roms/Bugs Bunny Crazy Castle.nes" },
+          { name: "The Jungle Book", path: "/roms/Jungle Book.nes" },
+          { name: "Super Contra", path: "/roms/Super C.nes" },
           { name: "Dragon Fighter", path: "/roms/Dragon Fighter.nes" },
           { name: "Shadow of the Ninja", path: "/roms/Shadow of the Ninja.nes" },
+          { name: "CrossFire", path: "/roms/CrossFire.nes" },
+          { name: "Prince of Persia", path: "/roms/Prince of Persia.nes" },
         ]);
       });
   }, []);
@@ -39,7 +45,10 @@ export default function GameSelector() {
       </h1>
       <p className="text-gray-500 text-sm mb-8">Select a game to play</p>
 
-      <div className="w-full max-w-sm space-y-3">
+      <div
+        className="w-full max-w-sm space-y-3"
+        style={roms.length > 5 ? { maxHeight: "calc(5 * 72px)", overflowY: "auto", paddingRight: "4px" } : {}}
+      >
         {roms.map((rom) => (
           <button
             key={rom.path}

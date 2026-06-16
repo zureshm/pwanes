@@ -37,6 +37,15 @@ export default function GamePad({ onButtonDown, onButtonUp }: GamePadProps) {
     [onButtonUp]
   );
 
+  const diagHandlers = (b1: number, b2: number) => ({
+    onTouchStart: (e: React.TouchEvent) => { e.preventDefault(); press(b1); press(b2); },
+    onTouchEnd:   (e: React.TouchEvent) => { e.preventDefault(); release(b1); release(b2); },
+    onTouchCancel:(e: React.TouchEvent) => { e.preventDefault(); release(b1); release(b2); },
+    onMouseDown:  () => { press(b1); press(b2); },
+    onMouseUp:    () => { release(b1); release(b2); },
+    onMouseLeave: () => { release(b1); release(b2); },
+  });
+
   const handlers = (btn: number) => ({
     onTouchStart: (e: React.TouchEvent) => { e.preventDefault(); press(btn); },
     onTouchEnd:   (e: React.TouchEvent) => { e.preventDefault(); release(btn); },
@@ -80,6 +89,47 @@ export default function GamePad({ onButtonDown, onButtonUp }: GamePadProps) {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-sm z-10"
             style={{ background: "#252540" }} />
 
+          {/* Diagonal: UP-LEFT */}
+          <button
+            {...diagHandlers(BUTTON_UP, BUTTON_LEFT)}
+            className="absolute top-0 left-0 w-10 h-10 z-20 flex items-center justify-center select-none active:brightness-75 transition-all duration-75 rounded-tl-lg"
+            style={{ background: "transparent" }}
+          >
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M2 2L10 2L2 10Z" fill="#475569"/>
+            </svg>
+          </button>
+          {/* Diagonal: UP-RIGHT */}
+          <button
+            {...diagHandlers(BUTTON_UP, BUTTON_RIGHT)}
+            className="absolute top-0 right-0 w-10 h-10 z-20 flex items-center justify-center select-none active:brightness-75 transition-all duration-75 rounded-tr-lg"
+            style={{ background: "transparent" }}
+          >
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M10 2L10 10L2 2Z" fill="#475569"/>
+            </svg>
+          </button>
+          {/* Diagonal: DOWN-LEFT */}
+          <button
+            {...diagHandlers(BUTTON_DOWN, BUTTON_LEFT)}
+            className="absolute bottom-0 left-0 w-10 h-10 z-20 flex items-center justify-center select-none active:brightness-75 transition-all duration-75 rounded-bl-lg"
+            style={{ background: "transparent" }}
+          >
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M2 10L2 2L10 10Z" fill="#475569"/>
+            </svg>
+          </button>
+          {/* Diagonal: DOWN-RIGHT */}
+          <button
+            {...diagHandlers(BUTTON_DOWN, BUTTON_RIGHT)}
+            className="absolute bottom-0 right-0 w-10 h-10 z-20 flex items-center justify-center select-none active:brightness-75 transition-all duration-75 rounded-br-lg"
+            style={{ background: "transparent" }}
+          >
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M10 10L2 10L10 2Z" fill="#475569"/>
+            </svg>
+          </button>
+
           {/* UP */}
           <button
             {...handlers(BUTTON_UP)}
@@ -122,25 +172,12 @@ export default function GamePad({ onButtonDown, onButtonUp }: GamePadProps) {
           </button>
         </div>
 
-        {/* A / B action buttons */}
+        {/* A / B action buttons — A bottom-left, B top-right */}
         <div className="relative w-36 h-36">
-          {/* B — bottom left */}
-          <button
-            {...handlers(BUTTON_B)}
-            className="absolute bottom-2 left-2 w-15 h-15 rounded-full flex items-center justify-center select-none transition-all duration-75 active:translate-y-[2px]"
-            style={{
-              width: 56, height: 56,
-              background: "linear-gradient(145deg, #7c3aed, #5b21b6)",
-              boxShadow: "0 5px 0 #3b0764, 0 6px 16px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.15)",
-              border: "1px solid #7c3aed",
-            }}
-          >
-            <span className="text-white font-bold text-lg tracking-tight" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>B</span>
-          </button>
-          {/* A — top right */}
+          {/* A — bottom left */}
           <button
             {...handlers(BUTTON_A)}
-            className="absolute top-2 right-2 rounded-full flex items-center justify-center select-none transition-all duration-75 active:translate-y-[2px]"
+            className="absolute bottom-2 left-2 rounded-full flex items-center justify-center select-none transition-all duration-75 active:translate-y-[2px]"
             style={{
               width: 60, height: 60,
               background: "linear-gradient(145deg, #dc2626, #991b1b)",
@@ -149,6 +186,19 @@ export default function GamePad({ onButtonDown, onButtonUp }: GamePadProps) {
             }}
           >
             <span className="text-white font-bold text-xl tracking-tight" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>A</span>
+          </button>
+          {/* B — top right */}
+          <button
+            {...handlers(BUTTON_B)}
+            className="absolute top-2 right-2 rounded-full flex items-center justify-center select-none transition-all duration-75 active:translate-y-[2px]"
+            style={{
+              width: 56, height: 56,
+              background: "linear-gradient(145deg, #7c3aed, #5b21b6)",
+              boxShadow: "0 5px 0 #3b0764, 0 6px 16px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.15)",
+              border: "1px solid #7c3aed",
+            }}
+          >
+            <span className="text-white font-bold text-lg tracking-tight" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>B</span>
           </button>
         </div>
 
