@@ -4,6 +4,8 @@ import { useEffect, useRef, useCallback, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import GamePad from "./GamePad";
 
+type LayoutType = "default" | "arcade";
+
 const FRAMEBUFFER_SIZE = 256 * 240;
 
 // Audio ring buffer constants
@@ -27,6 +29,8 @@ export default function EmulatorScreen() {
   const scriptNodeRef = useRef<ScriptProcessorNode | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [layout, setLayout] = useState<LayoutType>("default");
+  const [showMenu, setShowMenu] = useState(false);
 
   // Pixel buffer: Uint32Array view over ImageData for fast writes
   const imageDataRef = useRef<ImageData | null>(null);
@@ -188,13 +192,41 @@ export default function EmulatorScreen() {
 
   return (
     <div className="fixed inset-0 flex flex-col items-center" style={{ background: "linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%)" }}>
-      {/* Back button */}
-      <button
-        onClick={() => router.push("/")}
-        className="self-start mt-2 ml-3 z-50 text-gray-600 text-xs px-2 py-1 rounded border border-gray-800 active:bg-gray-800"
-      >
-        ← BACK
-      </button>
+      {/* Top bar with BACK and Layout selector */}
+      <div className="w-full flex justify-between items-start pt-2 px-3 z-50">
+        <button
+          onClick={() => router.push("/")}
+          className="text-gray-600 text-xs px-2 py-1 rounded border border-gray-800 active:bg-gray-800"
+        >
+          ← BACK
+        </button>
+
+        {/* Layout Selector */}
+        <div className="relative">
+          <button
+            onClick={() => setShowMenu(!showMenu)}
+            className="text-xs text-slate-400 bg-slate-800/80 hover:bg-slate-700 px-2 py-1 rounded border border-slate-600"
+          >
+            Layout ▼
+          </button>
+          {showMenu && (
+            <div className="absolute top-full right-0 mt-1 bg-slate-800 border border-slate-600 rounded shadow-lg py-1 min-w-[100px]">
+              <button
+                onClick={() => { setLayout("default"); setShowMenu(false); }}
+                className={`w-full text-left px-3 py-1.5 text-xs ${layout === "default" ? "text-green-400 bg-slate-700" : "text-slate-300 hover:bg-slate-700"}`}
+              >
+                Default
+              </button>
+              <button
+                onClick={() => { setLayout("arcade"); setShowMenu(false); }}
+                className={`w-full text-left px-3 py-1.5 text-xs ${layout === "arcade" ? "text-green-400 bg-slate-700" : "text-slate-300 hover:bg-slate-700"}`}
+              >
+                Arcade
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Screen area — pinned to top */}
       <div className="w-full px-3 mt-1">
@@ -223,7 +255,7 @@ export default function EmulatorScreen() {
 
       {/* Custom gamepad — pinned to bottom */}
       <div className="absolute bottom-0 left-0 right-0">
-        <GamePad onButtonDown={handleButtonDown} onButtonUp={handleButtonUp} />
+        <GamePad onButtonDown={handleButtonDown} onButtonUp={handleButtonUp} layout={layout} />
       </div>
     </div>
   );

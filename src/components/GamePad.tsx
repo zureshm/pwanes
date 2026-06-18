@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 
 const BUTTON_A = 0;
 const BUTTON_B = 1;
@@ -14,9 +14,10 @@ const BUTTON_RIGHT = 7;
 interface GamePadProps {
   onButtonDown: (button: number) => void;
   onButtonUp: (button: number) => void;
+  layout?: "default" | "arcade";
 }
 
-export default function GamePad({ onButtonDown, onButtonUp }: GamePadProps) {
+export default function GamePad({ onButtonDown, onButtonUp, layout = "default" }: GamePadProps) {
   const activeButtons = useRef<Set<number>>(new Set());
 
   const press = useCallback(
@@ -55,8 +56,8 @@ export default function GamePad({ onButtonDown, onButtonUp }: GamePadProps) {
     onMouseLeave: () => release(btn),
   });
 
-  return (
-    <div className="w-full max-w-[420px] mx-auto px-5 pt-4 pb-5">
+  const DefaultLayout = () => (
+    <>
       {/* SELECT / START */}
       <div className="flex justify-center gap-6 mb-4">
         {[{ label: "SELECT", btn: BUTTON_SELECT }, { label: "START", btn: BUTTON_START }].map(({ label, btn }) => (
@@ -77,132 +78,116 @@ export default function GamePad({ onButtonDown, onButtonUp }: GamePadProps) {
 
       {/* D-Pad + A/B */}
       <div className="flex justify-between items-center px-2">
-
         {/* D-Pad */}
         <div className="relative w-36 h-36">
-          {/* Cross arms background */}
-          <div className="absolute top-1/2 left-0 w-full h-12 -translate-y-1/2 rounded-lg"
-            style={{ background: "#1e1e32", boxShadow: "inset 0 2px 6px rgba(0,0,0,0.6)" }} />
-          <div className="absolute left-1/2 top-0 h-full w-12 -translate-x-1/2 rounded-lg"
-            style={{ background: "#1e1e32", boxShadow: "inset 0 2px 6px rgba(0,0,0,0.6)" }} />
-          {/* Center cap */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-sm z-10"
-            style={{ background: "#252540" }} />
+          <div className="absolute top-1/2 left-0 w-full h-12 -translate-y-1/2 rounded-lg" style={{ background: "#1e1e32", boxShadow: "inset 0 2px 6px rgba(0,0,0,0.6)" }} />
+          <div className="absolute left-1/2 top-0 h-full w-12 -translate-x-1/2 rounded-lg" style={{ background: "#1e1e32", boxShadow: "inset 0 2px 6px rgba(0,0,0,0.6)" }} />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-sm z-10" style={{ background: "#252540" }} />
 
-          {/* Diagonal: UP-LEFT */}
-          <button
-            {...diagHandlers(BUTTON_UP, BUTTON_LEFT)}
-            className="absolute top-0 left-0 w-10 h-10 z-20 flex items-center justify-center select-none active:brightness-75 transition-all duration-75 rounded-tl-lg"
-            style={{ background: "transparent" }}
-          >
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path d="M2 2L10 2L2 10Z" fill="#475569"/>
-            </svg>
+          {/* Diagonals */}
+          <button {...diagHandlers(BUTTON_UP, BUTTON_LEFT)} className="absolute top-0 left-0 w-10 h-10 z-20 flex items-center justify-center select-none active:brightness-75" style={{ background: "transparent" }}>
+            <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 2L10 2L2 10Z" fill="#475569"/></svg>
           </button>
-          {/* Diagonal: UP-RIGHT */}
-          <button
-            {...diagHandlers(BUTTON_UP, BUTTON_RIGHT)}
-            className="absolute top-0 right-0 w-10 h-10 z-20 flex items-center justify-center select-none active:brightness-75 transition-all duration-75 rounded-tr-lg"
-            style={{ background: "transparent" }}
-          >
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path d="M10 2L10 10L2 2Z" fill="#475569"/>
-            </svg>
+          <button {...diagHandlers(BUTTON_UP, BUTTON_RIGHT)} className="absolute top-0 right-0 w-10 h-10 z-20 flex items-center justify-center select-none active:brightness-75" style={{ background: "transparent" }}>
+            <svg width="12" height="12" viewBox="0 0 12 12"><path d="M10 2L10 10L2 2Z" fill="#475569"/></svg>
           </button>
-          {/* Diagonal: DOWN-LEFT */}
-          <button
-            {...diagHandlers(BUTTON_DOWN, BUTTON_LEFT)}
-            className="absolute bottom-0 left-0 w-10 h-10 z-20 flex items-center justify-center select-none active:brightness-75 transition-all duration-75 rounded-bl-lg"
-            style={{ background: "transparent" }}
-          >
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path d="M2 10L2 2L10 10Z" fill="#475569"/>
-            </svg>
+          <button {...diagHandlers(BUTTON_DOWN, BUTTON_LEFT)} className="absolute bottom-0 left-0 w-10 h-10 z-20 flex items-center justify-center select-none active:brightness-75" style={{ background: "transparent" }}>
+            <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 10L2 2L10 10Z" fill="#475569"/></svg>
           </button>
-          {/* Diagonal: DOWN-RIGHT */}
-          <button
-            {...diagHandlers(BUTTON_DOWN, BUTTON_RIGHT)}
-            className="absolute bottom-0 right-0 w-10 h-10 z-20 flex items-center justify-center select-none active:brightness-75 transition-all duration-75 rounded-br-lg"
-            style={{ background: "transparent" }}
-          >
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path d="M10 10L2 10L10 2Z" fill="#475569"/>
-            </svg>
+          <button {...diagHandlers(BUTTON_DOWN, BUTTON_RIGHT)} className="absolute bottom-0 right-0 w-10 h-10 z-20 flex items-center justify-center select-none active:brightness-75" style={{ background: "transparent" }}>
+            <svg width="12" height="12" viewBox="0 0 12 12"><path d="M10 10L2 10L10 2Z" fill="#475569"/></svg>
           </button>
 
-          {/* UP */}
-          <button
-            {...handlers(BUTTON_UP)}
-            className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-12 z-20 flex items-center justify-center rounded-t-lg select-none active:brightness-75 transition-all duration-75"
-            style={{ background: "linear-gradient(180deg, #2e2e50 0%, #1e1e38 100%)" }}
-          >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M7 2L13 12H1L7 2Z" fill="#94a3b8"/>
-            </svg>
+          {/* UP/DOWN/LEFT/RIGHT */}
+          <button {...handlers(BUTTON_UP)} className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-12 z-20 flex items-center justify-center rounded-t-lg" style={{ background: "linear-gradient(180deg, #2e2e50 0%, #1e1e38 100%)" }}>
+            <svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 2L13 12H1L7 2Z" fill="#94a3b8"/></svg>
           </button>
-          {/* DOWN */}
-          <button
-            {...handlers(BUTTON_DOWN)}
-            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-12 z-20 flex items-center justify-center rounded-b-lg select-none active:brightness-75 transition-all duration-75"
-            style={{ background: "linear-gradient(0deg, #2e2e50 0%, #1e1e38 100%)" }}
-          >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M7 12L1 2H13L7 12Z" fill="#94a3b8"/>
-            </svg>
+          <button {...handlers(BUTTON_DOWN)} className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-12 z-20 flex items-center justify-center rounded-b-lg" style={{ background: "linear-gradient(0deg, #2e2e50 0%, #1e1e38 100%)" }}>
+            <svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 12L1 2H13L7 12Z" fill="#94a3b8"/></svg>
           </button>
-          {/* LEFT */}
-          <button
-            {...handlers(BUTTON_LEFT)}
-            className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-12 z-20 flex items-center justify-center rounded-l-lg select-none active:brightness-75 transition-all duration-75"
-            style={{ background: "linear-gradient(90deg, #2e2e50 0%, #1e1e38 100%)" }}
-          >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M2 7L12 1V13L2 7Z" fill="#94a3b8"/>
-            </svg>
+          <button {...handlers(BUTTON_LEFT)} className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-12 z-20 flex items-center justify-center rounded-l-lg" style={{ background: "linear-gradient(90deg, #2e2e50 0%, #1e1e38 100%)" }}>
+            <svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7L12 1V13L2 7Z" fill="#94a3b8"/></svg>
           </button>
-          {/* RIGHT */}
-          <button
-            {...handlers(BUTTON_RIGHT)}
-            className="absolute right-0 top-1/2 -translate-y-1/2 w-12 h-12 z-20 flex items-center justify-center rounded-r-lg select-none active:brightness-75 transition-all duration-75"
-            style={{ background: "linear-gradient(270deg, #2e2e50 0%, #1e1e38 100%)" }}
-          >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M12 7L2 13V1L12 7Z" fill="#94a3b8"/>
-            </svg>
+          <button {...handlers(BUTTON_RIGHT)} className="absolute right-0 top-1/2 -translate-y-1/2 w-12 h-12 z-20 flex items-center justify-center rounded-r-lg" style={{ background: "linear-gradient(270deg, #2e2e50 0%, #1e1e38 100%)" }}>
+            <svg width="14" height="14" viewBox="0 0 14 14"><path d="M12 7L2 13V1L12 7Z" fill="#94a3b8"/></svg>
           </button>
         </div>
 
-        {/* A / B action buttons — A bottom-left, B top-right */}
+        {/* A / B */}
         <div className="relative w-36 h-36">
-          {/* A — bottom left */}
-          <button
-            {...handlers(BUTTON_A)}
-            className="absolute bottom-2 left-2 rounded-full flex items-center justify-center select-none transition-all duration-75 active:translate-y-[2px]"
-            style={{
-              width: 60, height: 60,
-              background: "linear-gradient(145deg, #dc2626, #991b1b)",
-              boxShadow: "0 5px 0 #450a0a, 0 6px 16px rgba(220,38,38,0.4), inset 0 1px 0 rgba(255,255,255,0.15)",
-              border: "1px solid #dc2626",
-            }}
-          >
-            <span className="text-white font-bold text-xl tracking-tight" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>A</span>
+          <button {...handlers(BUTTON_A)} className="absolute bottom-2 left-2 rounded-full flex items-center justify-center select-none transition-all active:translate-y-[2px]" style={{ width: 60, height: 60, background: "linear-gradient(145deg, #dc2626, #991b1b)", boxShadow: "0 5px 0 #450a0a, 0 6px 16px rgba(220,38,38,0.4)", border: "1px solid #dc2626" }}>
+            <span className="text-white font-bold text-xl">A</span>
           </button>
-          {/* B — top right */}
-          <button
-            {...handlers(BUTTON_B)}
-            className="absolute top-2 right-2 rounded-full flex items-center justify-center select-none transition-all duration-75 active:translate-y-[2px]"
-            style={{
-              width: 56, height: 56,
-              background: "linear-gradient(145deg, #7c3aed, #5b21b6)",
-              boxShadow: "0 5px 0 #3b0764, 0 6px 16px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.15)",
-              border: "1px solid #7c3aed",
-            }}
-          >
-            <span className="text-white font-bold text-lg tracking-tight" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>B</span>
+          <button {...handlers(BUTTON_B)} className="absolute top-2 right-2 rounded-full flex items-center justify-center select-none transition-all active:translate-y-[2px]" style={{ width: 56, height: 56, background: "linear-gradient(145deg, #7c3aed, #5b21b6)", boxShadow: "0 5px 0 #3b0764, 0 6px 16px rgba(124,58,237,0.4)", border: "1px solid #7c3aed" }}>
+            <span className="text-white font-bold text-lg">B</span>
           </button>
         </div>
-
       </div>
+    </>
+  );
+
+  const ArcadeLayout = () => (
+    <div className="relative w-full max-w-[360px] mx-auto">
+      {/* A/B on top */}
+      <div className="flex justify-center gap-8 mb-3">
+        <button {...handlers(BUTTON_B)} className="rounded-full flex items-center justify-center select-none transition-all active:translate-y-[2px]" style={{ width: 56, height: 56, background: "linear-gradient(145deg, #7c3aed, #5b21b6)", boxShadow: "0 5px 0 #3b0764, 0 6px 16px rgba(124,58,237,0.4)", border: "1px solid #7c3aed" }}>
+          <span className="text-white font-bold text-lg">B</span>
+        </button>
+        <button {...handlers(BUTTON_A)} className="rounded-full flex items-center justify-center select-none transition-all active:translate-y-[2px]" style={{ width: 60, height: 60, background: "linear-gradient(145deg, #dc2626, #991b1b)", boxShadow: "0 5px 0 #450a0a, 0 6px 16px rgba(220,38,38,0.4)", border: "1px solid #dc2626" }}>
+          <span className="text-white font-bold text-xl">A</span>
+        </button>
+      </div>
+
+      {/* Big D-Pad centered */}
+      <div className="relative w-44 h-44 mx-auto">
+        <div className="absolute top-1/2 left-0 w-full h-14 -translate-y-1/2 rounded-xl" style={{ background: "#1e1e32", boxShadow: "inset 0 2px 8px rgba(0,0,0,0.6)" }} />
+        <div className="absolute left-1/2 top-0 h-full w-14 -translate-x-1/2 rounded-xl" style={{ background: "#1e1e32", boxShadow: "inset 0 2px 8px rgba(0,0,0,0.6)" }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded z-10" style={{ background: "#252540" }} />
+
+        {/* Directions - bigger buttons */}
+        <button {...handlers(BUTTON_UP)} className="absolute top-0 left-1/2 -translate-x-1/2 w-14 h-14 z-20 flex items-center justify-center rounded-t-xl" style={{ background: "linear-gradient(180deg, #3e3e60 0%, #2e2e48 100%)" }}>
+          <svg width="16" height="16" viewBox="0 0 14 14"><path d="M7 2L13 12H1L7 2Z" fill="#94a3b8"/></svg>
+        </button>
+        <button {...handlers(BUTTON_DOWN)} className="absolute bottom-0 left-1/2 -translate-x-1/2 w-14 h-14 z-20 flex items-center justify-center rounded-b-xl" style={{ background: "linear-gradient(0deg, #3e3e60 0%, #2e2e48 100%)" }}>
+          <svg width="16" height="16" viewBox="0 0 14 14"><path d="M7 12L1 2H13L7 12Z" fill="#94a3b8"/></svg>
+        </button>
+        <button {...handlers(BUTTON_LEFT)} className="absolute left-0 top-1/2 -translate-y-1/2 w-14 h-14 z-20 flex items-center justify-center rounded-l-xl" style={{ background: "linear-gradient(90deg, #3e3e60 0%, #2e2e48 100%)" }}>
+          <svg width="16" height="16" viewBox="0 0 14 14"><path d="M2 7L12 1V13L2 7Z" fill="#94a3b8"/></svg>
+        </button>
+        <button {...handlers(BUTTON_RIGHT)} className="absolute right-0 top-1/2 -translate-y-1/2 w-14 h-14 z-20 flex items-center justify-center rounded-r-xl" style={{ background: "linear-gradient(270deg, #3e3e60 0%, #2e2e48 100%)" }}>
+          <svg width="16" height="16" viewBox="0 0 14 14"><path d="M12 7L2 13V1L12 7Z" fill="#94a3b8"/></svg>
+        </button>
+
+        {/* Diagonals in corners */}
+        <button {...diagHandlers(BUTTON_UP, BUTTON_LEFT)} className="absolute top-1 left-1 w-12 h-12 z-20 flex items-center justify-center" style={{ background: "transparent" }}>
+          <svg width="14" height="14" viewBox="0 0 12 12"><path d="M2 2L10 2L2 10Z" fill="#64748b"/></svg>
+        </button>
+        <button {...diagHandlers(BUTTON_UP, BUTTON_RIGHT)} className="absolute top-1 right-1 w-12 h-12 z-20 flex items-center justify-center" style={{ background: "transparent" }}>
+          <svg width="14" height="14" viewBox="0 0 12 12"><path d="M10 2L10 10L2 2Z" fill="#64748b"/></svg>
+        </button>
+        <button {...diagHandlers(BUTTON_DOWN, BUTTON_LEFT)} className="absolute bottom-1 left-1 w-12 h-12 z-20 flex items-center justify-center" style={{ background: "transparent" }}>
+          <svg width="14" height="14" viewBox="0 0 12 12"><path d="M2 10L2 2L10 10Z" fill="#64748b"/></svg>
+        </button>
+        <button {...diagHandlers(BUTTON_DOWN, BUTTON_RIGHT)} className="absolute bottom-1 right-1 w-12 h-12 z-20 flex items-center justify-center" style={{ background: "transparent" }}>
+          <svg width="14" height="14" viewBox="0 0 12 12"><path d="M10 10L2 10L10 2Z" fill="#64748b"/></svg>
+        </button>
+      </div>
+
+      {/* SL / ST compact at bottom */}
+      <div className="flex justify-center gap-3 mt-3">
+        <button {...handlers(BUTTON_SELECT)} className="rounded-md flex items-center justify-center select-none active:translate-y-[1px]" style={{ width: 44, height: 24, background: "#2a2a4a", border: "1px solid #3a3a6a" }}>
+          <span className="text-slate-300 text-[9px] font-bold tracking-wider">SL</span>
+        </button>
+        <button {...handlers(BUTTON_START)} className="rounded-md flex items-center justify-center select-none active:translate-y-[1px]" style={{ width: 44, height: 24, background: "#2a2a4a", border: "1px solid #3a3a6a" }}>
+          <span className="text-slate-300 text-[9px] font-bold tracking-wider">ST</span>
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="w-full max-w-[420px] mx-auto px-5 pt-4 pb-5">
+      {layout === "default" ? <DefaultLayout /> : <ArcadeLayout />}
     </div>
   );
 }
